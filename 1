@@ -1,0 +1,248 @@
+package.json
+{
+  "name": "sean-portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "pg": "^8.10.0",
+    "prisma": "^5.8.0",
+    "@prisma/client": "^5.8.0"
+  },
+  "devDependencies": {
+    "eslint": "8.40.0",
+    "eslint-config-next": "14.0.0"
+  }
+}
+
+next.config.js
+module.exports = {
+  reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    appDir: false
+  }
+};
+
+Dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+RUN npm ci --production=false
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY package.json package-lock.json* ./
+RUN npm ci --production=true
+COPY --from=builder /app/.next .next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/next.config.js ./next.config.js
+EXPOSE 3000
+ENV PORT=3000
+CMD ["npm", "start"]
+
+.dockerignore
+node_modules
+.next
+dist
+.env
+.env.local
+.env.development
+.DS_Store
+npm-debug.log
+yarn-error.log
+
+.env.example
+DATABASE_URL=postgresql://username:password@host:5432/dbname
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
+NEXTAUTH_URL=http://localhost:3000
+
+prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Project {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  title     String
+  summary   String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+lib/prisma.js
+const { PrismaClient } = require('@prisma/client');
+let prisma;
+if (!global.__prisma) {
+  global.__prisma = new PrismaClient();
+}
+prisma = global.__prisma;
+module.exports = prisma;
+
+pages/_app.js
+import '../styles/globals.css';
+
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />;
+}
+
+pages/index.js
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <main style={{ maxWidth: 800, margin: '40px auto', padding: '0 20px' }}>
+      
+
+Sean Phillips — AWS Cloud Engineer
+Projects, writeups, and contact information.
+
+About | Projects
+<section style={{ marginTop: 24 }}>
+Featured Project
+Example: Serverless Logging
+Brief summary of the project and link to full case study.
+
+); }
+pages/about.js
+export default function About() {
+  return (
+    <main style={{ maxWidth: 800, margin: '40px auto', padding: '0 20px' }}>
+      
+
+About
+Short bio, skills: AWS, Terraform, Docker, Next.js, Postgres, CI/CD.
+
+Contact: sean@seanphillips.net
+
+); }
+pages/projects/index.js
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+export default function Projects() {
+  const [projects, setProjects] = useState([]);
+  useEffect(() => {
+    fetch('/api/projects').then((r) => r.json()).then(setProjects);
+  }, []);
+  return (
+    <main style={{ maxWidth: 800, margin: '40px auto', padding: '0 20px' }}>
+      
+
+Projects
+{projects.map((p) => (
+<Link href={/projects/${p.slug}}>{p.title} — {p.summary}
+))}
+); }
+pages/projects/[slug].js
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+
+export default function ProjectPage() {
+  const { query } = useRouter();
+  const [project, setProject] = useState(null);
+  useEffect(() => {
+    if (!query.slug) return;
+    fetch(/api/projects/${query.slug}).then((r) => r.json()).then(setProject);
+  }, [query.slug]);
+  if (!project) return 
+
+Loading...
+
+; return ( <main style={{ maxWidth: 800, margin: '40px auto', padding: '0 20px' }}>
+{project.title}
+{project.content}
+
+); }
+pages/api/projects/index.js
+const prisma = require('../../../lib/prisma');
+
+export default async function handler(req, res) {
+  if (req.method === 'GET') {
+    const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } });
+    res.status(200).json(projects);
+  } else if (req.method === 'POST') {
+    const { title, slug, summary, content } = req.body;
+    const project = await prisma.project.create({ data: { title, slug, summary, content } });
+    res.status(201).json(project);
+  } else {
+    res.setHeader('Allow', ['GET', 'POST']);
+    res.status(405).end(Method ${req.method} Not Allowed);
+  }
+}
+
+pages/api/projects/[slug].js
+const prisma = require('../../../../lib/prisma');
+
+export default async function handler(req, res) {
+  const { slug } = req.query;
+  if (req.method === 'GET') {
+    const project = await prisma.project.findUnique({ where: { slug } });
+    if (!project) return res.status(404).json({ error: 'Not found' });
+    return res.status(200).json(project);
+  }
+  res.setHeader('Allow', ['GET']);
+  res.status(405).end(Method ${req.method} Not Allowed);
+}
+
+styles/globals.css
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: #111;
+  line-height: 1.6;
+}
+a {
+  color: #0366d6;
+  text-decoration: none;
+}
+main h1 {
+  margin-bottom: 8px;
+}
+
+scripts/seed.js
+const prisma = require('../lib/prisma');
+
+async function main() {
+  await prisma.project.createMany({
+    data: [
+      {
+        title: 'Serverless Logging',
+        slug: 'serverless-logging',
+        summary: 'Centralized logs with Lambda + Kinesis',
+        content: 'Full writeup...'
+      },
+      {
+        title: 'CI/CD Pipeline',
+        slug: 'ci-cd-pipeline',
+        summary: 'GitHub Actions -> ECR -> App Runner',
+        content: 'Details...'
+      }
+    ]
+  });
+  console.log('Seeded.');
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());

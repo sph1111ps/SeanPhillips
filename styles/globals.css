@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply font-sans antialiased text-clay-900 bg-gradient-to-br from-clay-50 via-white to-accent-50/30;
+    background-attachment: fixed;
+  }
+
+  a {
+    @apply text-accent-600 hover:text-accent-700 underline-offset-4 hover:underline transition-colors;
+  }
+}
