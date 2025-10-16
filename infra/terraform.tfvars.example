@@ -1,0 +1,4 @@
+region = "us-east-2"
+project = "sean-portfolio"
+db_password = "sean123"
+domain_name = ""
