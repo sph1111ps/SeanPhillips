@@ -153,21 +153,25 @@ jobs:
           SERVICE_ARN=${{ steps.ensure-service.outputs.SERVICE_ARN }}
 
           for attempt in {1..30}; do
-            STATUS=$(aws apprunner describe-service --service-arn "$SERVICE_ARN" --query "Service.State" --output text)
-            echo "State: $STATUS"
+            STATUS=$(aws apprunner describe-service --service-arn "$SERVICE_ARN" --query "Service.Status" --output text)
+            echo "Status: $STATUS (attempt $attempt/30)"
 
             if [ "$STATUS" = "RUNNING" ]; then
+              echo "✓ App Runner service is RUNNING"
+              SERVICE_URL=$(aws apprunner describe-service --service-arn "$SERVICE_ARN" --query "Service.ServiceUrl" --output text)
+              echo "Service URL: https://$SERVICE_URL"
               exit 0
             fi
 
-            if [ "$STATUS" = "DELETED" ] || [ "$STATUS" = "FAILED" ]; then
-              echo "Deployment failed with state $STATUS"
+            if [ "$STATUS" = "DELETED" ] || [ "$STATUS" = "CREATE_FAILED" ] || [ "$STATUS" = "UPDATE_FAILED_ROLLBACK_COMPLETE" ]; then
+              echo "✗ Deployment failed with status: $STATUS"
+              aws apprunner describe-service --service-arn "$SERVICE_ARN" --output json
               exit 1
             fi
 
             sleep 10
           done
 
-          echo "Timed out waiting for App Runner deployment"
+          echo "⚠ Timed out waiting for App Runner deployment"
           aws apprunner describe-service --service-arn "$SERVICE_ARN" --output json
           exit 1
