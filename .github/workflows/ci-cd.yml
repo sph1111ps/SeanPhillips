@@ -29,6 +29,19 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
+      - name: Clear Next.js cache
+        run: rm -rf .next
+
+      - name: Verify ESLint config exists
+        run: |
+          if [ -f .eslintrc.json ]; then
+            echo "✓ .eslintrc.json found"
+            cat .eslintrc.json
+          else
+            echo "✗ .eslintrc.json not found"
+            exit 1
+          fi
+
       - name: Lint
         run: npm run lint --if-present
 
