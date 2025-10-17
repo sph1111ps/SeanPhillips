@@ -131,7 +131,7 @@ export default function Projects() {
             <CardContent className="py-16">
               <h2 className="text-3xl font-bold text-clay-900 mb-6">Have a Project in Mind?</h2>
               <p className="text-lg text-clay-600 mb-8 max-w-2xl mx-auto">
-                Let's discuss how I can help bring your cloud infrastructure vision to life 
+                Let&apos;s discuss how I can help bring your cloud infrastructure vision to life 
                 with scalable, reliable, and cost-effective solutions.
               </p>
               <Button 

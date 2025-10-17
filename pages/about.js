@@ -62,13 +62,13 @@ export default function About() {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-lg text-clay-600 leading-relaxed">
-              I'm an AWS Cloud Engineer with extensive experience in designing and implementing 
+              I&apos;m an AWS Cloud Engineer with extensive experience in designing and implementing 
               scalable cloud infrastructure solutions. My passion lies in leveraging modern 
               technologies to solve complex problems and deliver robust, maintainable systems.
             </p>
             <p className="text-lg text-clay-600 leading-relaxed">
               With a strong foundation in DevOps practices, I specialize in infrastructure 
-              automation, containerization, and building efficient CI/CD pipelines. I'm 
+              automation, containerization, and building efficient CI/CD pipelines. I&apos;m 
               committed to continuous learning and staying current with the latest cloud 
               technologies and best practices.
             </p>
@@ -144,7 +144,7 @@ export default function About() {
               <CardTitle className="text-3xl text-clay-900">Get In Touch</CardTitle>
             </div>
             <CardDescription className="text-lg text-clay-600">
-              Let's discuss your next project or collaboration opportunity
+              Let&apos;s discuss your next project or collaboration opportunity
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -190,7 +190,7 @@ export default function About() {
                 <div className="text-center">
                   <h3 className="text-xl font-bold text-clay-900 mb-4">Ready to work together?</h3>
                   <p className="text-clay-600 mb-6">
-                    Let's discuss how I can help bring your cloud infrastructure vision to life.
+                    Let&apos;s discuss how I can help bring your cloud infrastructure vision to life.
                   </p>
                   <Button size="lg" asChild className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white shadow-clay-lg rounded-clay px-8 py-4">
                     <a href="mailto:sean@seanphillips.net" className="flex items-center">

@@ -215,7 +215,7 @@ export default function Home() {
               <div className="max-w-2xl space-y-4 text-center lg:text-left">
                 <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Ready to Build Something Amazing?</h2>
                 <p className="text-base sm:text-lg text-white/80 leading-relaxed">
-                  Let's discuss how I can help transform your ideas into scalable, reliable cloud solutions that
+                  Let&apos;s discuss how I can help transform your ideas into scalable, reliable cloud solutions that
                   drive your business forward. I typically respond within one business day.
                 </p>
               </div>

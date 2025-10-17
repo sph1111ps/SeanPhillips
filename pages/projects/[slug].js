@@ -48,7 +48,7 @@ export default function ProjectPage() {
               </div>
               <h1 className="text-3xl font-bold text-clay-900 mb-4">Project Not Found</h1>
               <p className="text-clay-600 text-lg mb-8">
-                The project you're looking for doesn't exist or has been moved.
+                The project you&apos;re looking for doesn&apos;t exist or has been moved.
               </p>
               <Button asChild size="lg" className="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white shadow-clay-lg rounded-clay px-8 py-4">
                 <Link href="/projects" className="flex items-center">
@@ -218,8 +218,8 @@ export default function ProjectPage() {
             <div className="max-w-2xl mx-auto">
               <h2 className="text-3xl font-bold text-clay-900 mb-6">Interested in this project?</h2>
               <p className="text-lg text-clay-600 mb-8 leading-relaxed">
-                Let's discuss how similar solutions can benefit your organization. 
-                I'm always excited to work on new challenges and help bring innovative 
+                Let&apos;s discuss how similar solutions can benefit your organization. 
+                I&apos;m always excited to work on new challenges and help bring innovative 
                 ideas to life through cloud engineering.
               </p>
               <Button 
