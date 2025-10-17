@@ -111,21 +111,42 @@ jobs:
             --output text || echo "")
 
           if [ -z "$SERVICE_ARN" ] || [ "$SERVICE_ARN" = "None" ]; then
+            echo "Creating new App Runner service..."
             SERVICE_ARN=$(aws apprunner create-service \
               --service-name "${APP_RUNNER_SERVICE_NAME}" \
-              --source-configuration ImageRepository="{ImageIdentifier='${{ secrets.ECR_REGISTRY }}:${{ env.IMAGE_TAG }}',ImageRepositoryType='ECR',ImageConfiguration={Port='3000'}}" \
-              --instance-configuration Cpu=1024,Memory=2048 \
+              --source-configuration '{
+                "ImageRepository": {
+                  "ImageIdentifier": "${{ secrets.ECR_REGISTRY }}:${{ env.IMAGE_TAG }}",
+                  "ImageRepositoryType": "ECR",
+                  "ImageConfiguration": {
+                    "Port": "3000"
+                  }
+                }
+              }' \
+              --instance-configuration '{
+                "Cpu": "1024",
+                "Memory": "2048"
+              }' \
               --output text --query 'Service.ServiceArn')
           fi
 
           echo "SERVICE_ARN=$SERVICE_ARN" >> $GITHUB_OUTPUT
 
-      - name: Start App Runner deployment
+      - name: Update App Runner service with new image
         run: |
           SERVICE_ARN=${{ steps.ensure-service.outputs.SERVICE_ARN }}
-          aws apprunner start-deployment \
+          echo "Updating App Runner service with new image..."
+          aws apprunner update-service \
             --service-arn "$SERVICE_ARN" \
-            --source-configuration ImageRepository="{ImageIdentifier='${{ secrets.ECR_REGISTRY }}:${{ env.IMAGE_TAG }}',ImageRepositoryType='ECR',ImageConfiguration={Port='3000'}}"
+            --source-configuration '{
+              "ImageRepository": {
+                "ImageIdentifier": "${{ secrets.ECR_REGISTRY }}:${{ env.IMAGE_TAG }}",
+                "ImageRepositoryType": "ECR",
+                "ImageConfiguration": {
+                  "Port": "3000"
+                }
+              }
+            }'
 
       - name: Wait for deployment to reach RUNNING
         run: |
